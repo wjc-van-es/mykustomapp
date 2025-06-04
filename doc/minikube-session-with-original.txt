@@ -1,0 +1,408 @@
+(base) willem@mint-22:~/git/mykustomapp$ minikube version
+minikube version: v1.35.0
+commit: dd5d320e41b5451cdf3c01891bc4e13d189586ed-dirty
+(base) willem@mint-22:~/git/mykustomapp$ conda deactivate
+willem@mint-22:~/git/mykustomapp$ minikube update-cehck
+Error: unknown command "update-cehck" for "minikube"
+
+Did you mean this?
+        update-check
+
+Run 'minikube --help' for usage.
+willem@mint-22:~/git/mykustomapp$ tldr minikube
+Warning: The cache hasn't been updated for 118 days.
+You should probably run `tldr --update` soon.
+
+  Run Kubernetes locally.
+  More information: <https://minikube.sigs.k8s.io/docs/>.
+
+  Start the cluster:
+
+      minikube start
+
+  Get the IP address of the cluster:
+
+      minikube ip
+
+  Access a service named my_service exposed via a node port and get the URL:
+
+      minikube service my_service --url
+
+  Open the Kubernetes dashboard in a browser:
+
+      minikube dashboard
+
+  Stop the running cluster:
+
+      minikube stop
+
+  Delete the cluster:
+
+      minikube delete
+
+  Connect to LoadBalancer services:
+
+      minikube tunnel
+
+willem@mint-22:~/git/mykustomapp$ tldr --update
+Successfully updated cache.
+willem@mint-22:~/git/mykustomapp$ tldr minikube
+
+  Run Kubernetes locally.
+  More information: <https://minikube.sigs.k8s.io/docs/>.
+
+  Start the cluster:
+
+      minikube start
+
+  Get the IP address of the cluster:
+
+      minikube ip
+
+  Access a service named my_service exposed via a node port and get the URL:
+
+      minikube service my_service --url
+
+  Open the Kubernetes dashboard in a browser:
+
+      minikube dashboard
+
+  Stop the running cluster:
+
+      minikube stop
+
+  Delete the cluster:
+
+      minikube delete
+
+  Connect to LoadBalancer services:
+
+      minikube tunnel
+
+willem@mint-22:~/git/mykustomapp$ minikube help
+minikube provisions and manages local Kubernetes clusters optimized for development workflows.
+
+Basic Commands:
+  start            Starts a local Kubernetes cluster
+  status           Gets the status of a local Kubernetes cluster
+  stop             Stops a running local Kubernetes cluster
+  delete           Deletes a local Kubernetes cluster
+  dashboard        Access the Kubernetes dashboard running within the minikube cluster
+  pause            pause Kubernetes
+  unpause          unpause Kubernetes
+
+Images Commands:
+  docker-env       Provides instructions to point your terminal's docker-cli to the Docker Engine inside minikube.
+(Useful for building docker images directly inside minikube)
+  podman-env       Configure environment to use minikube's Podman service
+  cache            Manage cache for images
+  image            Manage images
+
+Configuration and Management Commands:
+  addons           Enable or disable a minikube addon
+  config           Modify persistent configuration values
+  profile          Get or list the current profiles (clusters)
+  update-context   Update kubeconfig in case of an IP or port change
+
+Networking and Connectivity Commands:
+  service          Returns a URL to connect to a service
+  tunnel           Connect to LoadBalancer services
+
+Advanced Commands:
+  mount            Mounts the specified directory into minikube
+  ssh              Log into the minikube environment (for debugging)
+  kubectl          Run a kubectl binary matching the cluster version
+  node             Add, remove, or list additional nodes
+  cp               Copy the specified file into minikube
+
+Troubleshooting Commands:
+  ssh-key          Retrieve the ssh identity key path of the specified node
+  ssh-host         Retrieve the ssh host key of the specified node
+  ip               Retrieves the IP address of the specified node
+  logs             Returns logs to debug a local Kubernetes cluster
+  update-check     Print current and latest version number
+  version          Print the version of minikube
+  options          Show a list of global command-line options (applies to all commands).
+
+Other Commands:
+  completion       Generate command completion for a shell
+  license          Outputs the licenses of dependencies to a directory
+
+Use "minikube <command> --help" for more information about a given command.
+willem@mint-22:~/git/mykustomapp$ minikube update-check
+CurrentVersion: v1.35.0
+LatestVersion: v1.36.0
+willem@mint-22:~/git/mykustomapp$ kubectl version
+Client Version: v1.32.1
+Kustomize Version: v5.5.0
+The connection to the server localhost:8080 was refused - did you specify the right host or port?
+willem@mint-22:~/git/mykustomapp$ minikube version
+minikube version: v1.35.0
+commit: dd5d320e41b5451cdf3c01891bc4e13d189586ed-dirty
+willem@mint-22:~/git/mykustomapp$ docker version
+Client: Docker Engine - Community
+ Version:           28.2.2
+ API version:       1.50
+ Go version:        go1.24.3
+ Git commit:        e6534b4
+ Built:             Fri May 30 12:07:27 2025
+ OS/Arch:           linux/amd64
+ Context:           default
+
+Server: Docker Engine - Community
+ Engine:
+  Version:          28.2.2
+  API version:      1.50 (minimum version 1.24)
+  Go version:       go1.24.3
+  Git commit:       45873be
+  Built:            Fri May 30 12:07:27 2025
+  OS/Arch:          linux/amd64
+  Experimental:     false
+ containerd:
+  Version:          1.7.27
+  GitCommit:        05044ec0a9a75232cad458027ca83437aae3f4da
+ runc:
+  Version:          1.2.5
+  GitCommit:        v1.2.5-0-g59923ef
+ docker-init:
+  Version:          0.19.0
+  GitCommit:        de40ad0
+willem@mint-22:~/git/mykustomapp$ minikube start --cpus 2 --memory 4g --driver docker -p kustomize
+😄  [kustomize] minikube v1.35.0 on Linuxmint 22
+🎉  minikube 1.36.0 is available! Download it: https://github.com/kubernetes/minikube/releases/tag/v1.36.0
+💡  To disable this notice, run: 'minikube config set WantUpdateNotification false'
+
+✨  Using the docker driver based on user configuration
+📌  Using Docker driver with root privileges
+👍  Starting "kustomize" primary control-plane node in "kustomize" cluster
+🚜  Pulling base image v0.0.46 ...
+🔥  Creating docker container (CPUs=2, Memory=4096MB) ...
+🐳  Preparing Kubernetes v1.32.0 on Docker 27.4.1 ...
+    ▪ Generating certificates and keys ...
+    ▪ Booting up control plane ...
+    ▪ Configuring RBAC rules ...
+🔗  Configuring bridge CNI (Container Networking Interface) ...
+🔎  Verifying Kubernetes components...
+    ▪ Using image gcr.io/k8s-minikube/storage-provisioner:v5
+🌟  Enabled addons: storage-provisioner, default-storageclass
+🏄  Done! kubectl is now configured to use "kustomize" cluster and "default" namespace by default
+willem@mint-22:~/git/mykustomapp$ kubectl get po -A
+NAMESPACE     NAME                                READY   STATUS    RESTARTS     AGE
+kube-system   coredns-668d6bf9bc-pbtzx            0/1     Running   0            37s
+kube-system   etcd-kustomize                      1/1     Running   0            44s
+kube-system   kube-apiserver-kustomize            1/1     Running   0            44s
+kube-system   kube-controller-manager-kustomize   1/1     Running   0            44s
+kube-system   kube-proxy-mh6fk                    1/1     Running   0            37s
+kube-system   kube-scheduler-kustomize            1/1     Running   0            44s
+kube-system   storage-provisioner                 1/1     Running   1 (5s ago)   41s
+willem@mint-22:~/git/mykustomapp$ minikube -p kustomize image ls
+registry.k8s.io/pause:3.10
+registry.k8s.io/kube-scheduler:v1.32.0
+registry.k8s.io/kube-proxy:v1.32.0
+registry.k8s.io/kube-controller-manager:v1.32.0
+registry.k8s.io/kube-apiserver:v1.32.0
+registry.k8s.io/etcd:3.5.16-0
+registry.k8s.io/coredns/coredns:v1.11.3
+gcr.io/k8s-minikube/storage-provisioner:v5
+docker.io/kubernetesui/metrics-scraper:<none>
+docker.io/kubernetesui/dashboard:<none>
+willem@mint-22:~/git/mykustomapp$ minikube image pull devopsjourney1/mywebapp:latest
+
+❌  Exiting due to MK_USAGE: loading profile: cluster "minikube" does not exist
+
+╭───────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                           │
+│    😿  If the above advice does not help, please let us know:                             │
+│    👉  https://github.com/kubernetes/minikube/issues/new/choose                           │
+│                                                                                           │
+│    Please run `minikube logs --file=logs.txt` and attach logs.txt to the GitHub issue.    │
+│    Please also attach the following file to the GitHub issue:                             │
+│    - /tmp/minikube_image_b36c29f99c961cfa04c7168a6fa7a2ac02f8d9b4_0.log                   │
+│                                                                                           │
+╰───────────────────────────────────────────────────────────────────────────────────────────╯
+
+willem@mint-22:~/git/mykustomapp$ minikube image pull devopsjourney1/mywebapp:latest -p kustomize
+willem@mint-22:~/git/mykustomapp$ minikube -p kustomize image ls
+registry.k8s.io/pause:3.10
+registry.k8s.io/kube-scheduler:v1.32.0
+registry.k8s.io/kube-proxy:v1.32.0
+registry.k8s.io/kube-controller-manager:v1.32.0
+registry.k8s.io/kube-apiserver:v1.32.0
+registry.k8s.io/etcd:3.5.16-0
+registry.k8s.io/coredns/coredns:v1.11.3
+gcr.io/k8s-minikube/storage-provisioner:v5
+docker.io/kubernetesui/metrics-scraper:<none>
+docker.io/kubernetesui/dashboard:<none>
+docker.io/devopsjourney1/mywebapp:latest
+willem@mint-22:~/git/mykustomapp$ kubectl apply -f original/
+configmap/mywebapp-configmapv1.0 created
+deployment.apps/mywebapp created
+service/mywebapp created
+willem@mint-22:~/git/mykustomapp$ kubectl get po -A
+NAMESPACE              NAME                                         READY   STATUS    RESTARTS      AGE
+default                mywebapp-75b586b9cc-sbtmk                    1/1     Running   0             33s
+kube-system            coredns-668d6bf9bc-pbtzx                     1/1     Running   0             32m
+kube-system            etcd-kustomize                               1/1     Running   0             32m
+kube-system            kube-apiserver-kustomize                     1/1     Running   0             32m
+kube-system            kube-controller-manager-kustomize            1/1     Running   0             32m
+kube-system            kube-proxy-mh6fk                             1/1     Running   0             32m
+kube-system            kube-scheduler-kustomize                     1/1     Running   0             32m
+kube-system            storage-provisioner                          1/1     Running   1 (31m ago)   32m
+kubernetes-dashboard   dashboard-metrics-scraper-5d59dccf9b-7vgnq   1/1     Running   0             29m
+kubernetes-dashboard   kubernetes-dashboard-7779f9b69b-zhgmr        1/1     Running   0             29m
+willem@mint-22:~/git/mykustomapp$ history | grep kubectl
+  564  kubectl get deploy
+  567  kubectl get all -n polar
+  568  kubectl get all -n polar-ui
+  569  kubectl get all -n default
+  570  kubectl get ingress
+  571  kubectl get all -n ingress-nginx
+  730  kubectl version
+  734  kubectl get po -A
+  739  kubectl apply -f original/
+  740  kubectl get po -A
+  741  history | grep kubectl
+willem@mint-22:~/git/mykustomapp$ kubectl get all -n mywebapp
+No resources found in mywebapp namespace.
+willem@mint-22:~/git/mykustomapp$ kubectl get all -l mywebapp
+No resources found in default namespace.
+willem@mint-22:~/git/mykustomapp$ kubectl get all -l app=mywebapp
+NAME                            READY   STATUS    RESTARTS   AGE
+pod/mywebapp-75b586b9cc-sbtmk   1/1     Running   0          6m14s
+
+NAME               TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+service/mywebapp   LoadBalancer   10.108.168.237   <pending>     80:30478/TCP   6m14s
+
+NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/mywebapp   1/1     1            1           6m14s
+
+NAME                                  DESIRED   CURRENT   READY   AGE
+replicaset.apps/mywebapp-75b586b9cc   1         1         1       6m14s
+willem@mint-22:~/git/mykustomapp$ kubectl get services
+NAME         TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+kubernetes   ClusterIP      10.96.0.1        <none>        443/TCP        86m
+mywebapp     LoadBalancer   10.108.168.237   <pending>     80:30478/TCP   54m
+willem@mint-22:~/git/mykustomapp$ minikube service mywebapp -p kustomize
+|-----------|----------|-------------|---------------------------|
+| NAMESPACE |   NAME   | TARGET PORT |            URL            |
+|-----------|----------|-------------|---------------------------|
+| default   | mywebapp | flask/80    | http://192.168.67.2:30478 |
+|-----------|----------|-------------|---------------------------|
+
+❌  Exiting due to SVC_UNREACHABLE: service not available: no running pod for service mywebapp found
+
+╭───────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                           │
+│    😿  If the above advice does not help, please let us know:                             │
+│    👉  https://github.com/kubernetes/minikube/issues/new/choose                           │
+│                                                                                           │
+│    Please run `minikube logs --file=logs.txt` and attach logs.txt to the GitHub issue.    │
+│    Please also attach the following file to the GitHub issue:                             │
+│    - /tmp/minikube_service_9d2f2f3297c64cbc3f9fd00f6e5604cbcf27475c_0.log                 │
+│                                                                                           │
+╰───────────────────────────────────────────────────────────────────────────────────────────╯
+
+willem@mint-22:~/git/mykustomapp$ kubectl get all -l app=mywebapp
+NAME                            READY   STATUS    RESTARTS   AGE
+pod/mywebapp-75b586b9cc-sbtmk   1/1     Running   0          58m
+
+NAME               TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+service/mywebapp   LoadBalancer   10.108.168.237   <pending>     80:30478/TCP   58m
+
+NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/mywebapp   1/1     1            1           58m
+
+NAME                                  DESIRED   CURRENT   READY   AGE
+replicaset.apps/mywebapp-75b586b9cc   1         1         1       58m
+willem@mint-22:~/git/mykustomapp$ minikube -p kustomize image ls
+registry.k8s.io/pause:3.10
+registry.k8s.io/kube-scheduler:v1.32.0
+registry.k8s.io/kube-proxy:v1.32.0
+registry.k8s.io/kube-controller-manager:v1.32.0
+registry.k8s.io/kube-apiserver:v1.32.0
+registry.k8s.io/etcd:3.5.16-0
+registry.k8s.io/coredns/coredns:v1.11.3
+gcr.io/k8s-minikube/storage-provisioner:v5
+docker.io/kubernetesui/metrics-scraper:<none>
+docker.io/kubernetesui/dashboard:<none>
+docker.io/devopsjourney1/mywebapp:latest
+willem@mint-22:~/git/mykustomapp$ minikube -p kustomize service mywebapp
+|-----------|----------|-------------|---------------------------|
+| NAMESPACE |   NAME   | TARGET PORT |            URL            |
+|-----------|----------|-------------|---------------------------|
+| default   | mywebapp | flask/80    | http://192.168.67.2:30478 |
+|-----------|----------|-------------|---------------------------|
+
+❌  Exiting due to SVC_UNREACHABLE: service not available: no running pod for service mywebapp found
+
+╭───────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                           │
+│    😿  If the above advice does not help, please let us know:                             │
+│    👉  https://github.com/kubernetes/minikube/issues/new/choose                           │
+│                                                                                           │
+│    Please run `minikube logs --file=logs.txt` and attach logs.txt to the GitHub issue.    │
+│    Please also attach the following file to the GitHub issue:                             │
+│    - /tmp/minikube_service_9d2f2f3297c64cbc3f9fd00f6e5604cbcf27475c_0.log                 │
+│                                                                                           │
+╰───────────────────────────────────────────────────────────────────────────────────────────╯
+
+willem@mint-22:~/git/mykustomapp$ kubectl apply -f original/service.yaml
+service/mywebapp created
+willem@mint-22:~/git/mykustomapp$ kubectl apply -f original/service.yaml
+service/mywebapp created
+willem@mint-22:~/git/mykustomapp$ kubectl apply -f original/service.yaml
+service/mywebapp created
+willem@mint-22:~/git/mykustomapp$ minikube -p kustomize service mywebapp
+|-----------|----------|-------------|---------------------------|
+| NAMESPACE |   NAME   | TARGET PORT |            URL            |
+|-----------|----------|-------------|---------------------------|
+| default   | mywebapp |          80 | http://192.168.67.2:31538 |
+|-----------|----------|-------------|---------------------------|
+🎉  Opening service default/mywebapp in default browser...
+willem@mint-22:~/git/mykustomapp$ Gtk-Message: 16:47:48.540: Failed to load module "xapp-gtk3-module"
+[0604/164748.601757:WARNING:chrome/app/chrome_main_linux.cc:82] Read channel stable from /app/extra/CHROME_VERSION_EXTRA
+[0604/164748.714370:WARNING:chrome/app/chrome_main_linux.cc:82] Read channel stable from /app/extra/CHROME_VERSION_EXTRA
+Opening in existing browser session.
+willem@mint-22:~/git/mykustomapp$ kubectl get services
+NAME         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+kubernetes   ClusterIP      10.96.0.1       <none>        443/TCP        7h5m
+mywebapp     LoadBalancer   10.99.155.117   <pending>     80:31538/TCP   4h55m
+willem@mint-22:~/git/mykustomapp$ kubectl delete -f original/
+configmap "mywebapp-configmapv1.0" deleted
+deployment.apps "mywebapp" deleted
+service "mywebapp" deleted
+willem@mint-22:~/git/mykustomapp$ kubectl apply -f original/service.yaml
+service/mywebapp created
+willem@mint-22:~/git/mykustomapp$ kubectl delete -f original/
+service "mywebapp" deleted
+Error from server (NotFound): error when deleting "original/configmap.yaml": configmaps "mywebapp-configmapv1.0" not found
+Error from server (NotFound): error when deleting "original/deployment.yaml": deployments.apps "mywebapp" not found
+willem@mint-22:~/git/mykustomapp$ kubectl apply -f original/
+configmap/mywebapp-configmapv1.0 created
+deployment.apps/mywebapp created
+service/mywebapp created
+willem@mint-22:~/git/mykustomapp$ kubectl get services
+NAME         TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+kubernetes   ClusterIP      10.96.0.1      <none>        443/TCP        7h26m
+mywebapp     LoadBalancer   10.100.63.26   <pending>     80:31369/TCP   45s
+willem@mint-22:~/git/mykustomapp$ minikube -p kustomize service mywebapp
+|-----------|----------|-------------|---------------------------|
+| NAMESPACE |   NAME   | TARGET PORT |            URL            |
+|-----------|----------|-------------|---------------------------|
+| default   | mywebapp |          80 | http://192.168.67.2:31369 |
+|-----------|----------|-------------|---------------------------|
+🎉  Opening service default/mywebapp in default browser...
+willem@mint-22:~/git/mykustomapp$ Gtk-Message: 22:03:48.098: Failed to load module "xapp-gtk3-module"
+[0604/220348.155202:WARNING:chrome/app/chrome_main_linux.cc:82] Read channel stable from /app/extra/CHROME_VERSION_EXTRA
+[0604/220348.269328:WARNING:chrome/app/chrome_main_linux.cc:82] Read channel stable from /app/extra/CHROME_VERSION_EXTRA
+Opening in existing browser session.
+^C
+willem@mint-22:~/git/mykustomapp$ kubectl delete -f original/
+configmap "mywebapp-configmapv1.0" deleted
+deployment.apps "mywebapp" deleted
+service "mywebapp" deleted
+willem@mint-22:~/git/mykustomapp$ minikube stop -p kustomize
+✋  Stopping node "kustomize"  ...
+🛑  Powering off "kustomize" via SSH ...
+🛑  1 node stopped.
+willem@mint-22:~/git/mykustomapp$

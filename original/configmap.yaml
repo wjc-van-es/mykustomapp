@@ -4,6 +4,6 @@ metadata:
   name: mywebapp-configmapv1.0
   namespace: default
 data:
-  BG_COLOR: '#12181b'
+  BG_COLOR: '#acd1f2'
   FONT_COLOR: '#FFFFFF'
-  CUSTOM_HEADER: My Custom Message
+  CUSTOM_HEADER: Service or Zeurvis?
