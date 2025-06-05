@@ -37,6 +37,9 @@ h1,h2,h3,h4,h5 {
 </style>
 
 # Minikube with new profile setup
+## Context
+- we want to use this minikube cluster with `-p kustomize` to try out k8s kustomization
+- [https://www.youtube.com/watch?v=spCdNeNCuFU](https://www.youtube.com/watch?v=spCdNeNCuFU)
 
 ## Minikube Overview
 - [https://github.com/wjc-van-es/cnsia/blob/main/doc/k8s-minikube.md](https://github.com/wjc-van-es/cnsia/blob/main/doc/k8s-minikube.md)
@@ -228,3 +231,6 @@ Opening in existing browser session.
 
 - removing the original configuration with `~/git/mykustomapp$ kubectl delete -f original/`
 - Stop minikube profile: `minikube stop -p kustomize`
+
+## Next part
+- [kustomize_1rst-steps.md](kustomize_1rst-steps.md)
