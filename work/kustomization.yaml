@@ -3,7 +3,7 @@ resources:
   - service.yaml
 
 commonLabels:
-  app: mykustomapp
+  app: mywebapp
 
 commonAnnotations:
   app: mykustom-annotations
