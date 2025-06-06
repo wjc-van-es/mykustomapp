@@ -1,0 +1,9 @@
+# matching the ../../base/deployment.yaml by copying its metadata.name mywebapp
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mywebapp
+
+# now override its number of replicas
+spec:
+  replicas: 3

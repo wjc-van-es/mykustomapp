@@ -1,0 +1,21 @@
+# list the location of all base resources
+# bases give a deprecation warning
+bases:
+  - ../../base
+
+# change the namespace from default to prod
+namespace: prod
+
+# declare all files that override parts of the base resource definitions
+# patches: give
+# error: invalid Kustomization: json: cannot unmarshal string into Go struct field Kustomization.patches of type types.Patch
+# https://github.com/kubernetes-sigs/kustomize/issues/1373
+# however, patchesStrategicMerge also give a deprecation warning (but still works)
+# third option use patches with path attributes
+patches:
+  - path: replicas.yaml
+
+# use the dev specific config.properties
+configMapGenerator:
+  - name: mykustom-map
+    env: config.properties

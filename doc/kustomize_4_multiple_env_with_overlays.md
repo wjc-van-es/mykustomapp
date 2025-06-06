@@ -170,5 +170,142 @@ Opening in existing browser session.
 - stopping minikube dashboard with Ctrl+C
 - `minikube stop -p kustomize`
 
-### Remainder for `prod` environment
+## Remainder for `prod` environment
 - [https://www.youtube.com/watch?v=spCdNeNCuFU&t=1388s](https://www.youtube.com/watch?v=spCdNeNCuFU&t=1388s)
+
+### Changes with respect to `work-02/overlays/dev`
+- copy content from [`work-02/overlays/dev`](../work-02/overlays/dev) into 
+  [`work-02/overlays/prod`](../work-02/overlays/prod)
+- in [`work-02/overlays/prod/kustomization.yaml`](../work-02/overlays/prod/kustomization.yaml) change
+  - `namespace: dev` to `namespace: prod`
+- in [`work-02/overlays/prod/config.properties`](../work-02/overlays/prod/config.properties) change
+  - `CUSTOM_HEADER` to refer to `prod` environment instead of `dev`
+  - `BG_COLOR=#519162` to `BG_COLOR=#519162` to emphasize the difference between `dev` and `prod`
+- in [](../work-02/overlays/prod/replicas.yaml) change
+  - `spec.replicas` to 3
+
+### test the `prod` namespace
+- `~/git/mykustomapp$ kubectl kustomize work-02/overlays/prod > work-02/overlays/prod/gen.yaml`
+- Now you can compare 
+  - [work-02/overlays/prod/gen.yaml](../work-02/overlays/prod/gen.yaml) with 
+  - [work-02/overlays/dev/gen.yaml](../work-02/overlays/dev/gen.yaml)
+- Apply the kustomization to the prod namespace of our minikube cluster with
+  - `~/git/mykustomapp$ kubectl apply -k work-02/overlays/prod`
+- check all artefacts in the `prod` namespace with
+  - `kubectl get all -n prod`
+- check all artefacts with label `app=mywebapp` on all namespaces (currently default & dev) with
+  - `kubectl get all -l app=mywebapp --all-namespaces`
+- open the homepage in a browser with
+  - `minikube service kustom-mywebapp-v1 -n prod -p kustomize`
+
+<details>
+
+```bash
+(base) willem@mint-22:~/git/mykustomapp$ minikube start -p kustomize
+😄  [kustomize] minikube v1.35.0 on Linuxmint 22
+🎉  minikube 1.36.0 is available! Download it: https://github.com/kubernetes/minikube/releases/tag/v1.36.0
+💡  To disable this notice, run: 'minikube config set WantUpdateNotification false'
+
+✨  Using the docker driver based on existing profile
+👍  Starting "kustomize" primary control-plane node in "kustomize" cluster
+🚜  Pulling base image v0.0.46 ...
+🔄  Restarting existing docker container for "kustomize" ...
+🐳  Preparing Kubernetes v1.32.0 on Docker 27.4.1 ...
+🔎  Verifying Kubernetes components...
+    ▪ Using image gcr.io/k8s-minikube/storage-provisioner:v5
+    ▪ Using image docker.io/kubernetesui/dashboard:v2.7.0
+    ▪ Using image docker.io/kubernetesui/metrics-scraper:v1.0.8
+💡  Some dashboard features require the metrics-server addon. To enable all features please run:
+
+        minikube -p kustomize addons enable metrics-server
+
+🌟  Enabled addons: default-storageclass, storage-provisioner, dashboard
+🏄  Done! kubectl is now configured to use "kustomize" cluster and "default" namespace by default
+(base) willem@mint-22:~/git/mykustomapp$ kubectl get all -l app=mywebapp --all-namespaces
+NAMESPACE   NAME                                      READY   STATUS    RESTARTS      AGE
+default     pod/kustom-mywebapp-v1-f875df8b-d8h2c     1/1     Running   1 (13h ago)   23h
+dev         pod/kustom-mywebapp-v1-67889f7d79-wrvjc   1/1     Running   1 (13h ago)   14h
+dev         pod/kustom-mywebapp-v1-67889f7d79-wsms6   1/1     Running   1 (13h ago)   14h
+
+NAMESPACE   NAME                         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+default     service/kustom-mywebapp-v1   LoadBalancer   10.98.186.162   <pending>     80:31683/TCP   24h
+dev         service/kustom-mywebapp-v1   LoadBalancer   10.105.206.96   <pending>     80:31425/TCP   14h
+
+NAMESPACE   NAME                                 READY   UP-TO-DATE   AVAILABLE   AGE
+default     deployment.apps/kustom-mywebapp-v1   1/1     1            1           24h
+dev         deployment.apps/kustom-mywebapp-v1   2/2     2            2           14h
+
+NAMESPACE   NAME                                            DESIRED   CURRENT   READY   AGE
+default     replicaset.apps/kustom-mywebapp-v1-59565b8f7c   0         0         0       24h
+default     replicaset.apps/kustom-mywebapp-v1-f875df8b     1         1         1       23h
+dev         replicaset.apps/kustom-mywebapp-v1-67889f7d79   2         2         2       14h
+(base) willem@mint-22:~/git/mykustomapp$ kubectl kustomize work-02/overlays/prod > work-02/overlays/prod/gen.yaml
+# Warning: 'bases' is deprecated. Please use 'resources' instead. Run 'kustomize edit fix' to update your Kustomization automatically.
+# Warning: 'commonLabels' is deprecated. Please use 'labels' instead. Run 'kustomize edit fix' to update your Kustomization automatically.
+(base) willem@mint-22:~/git/mykustomapp$ kubectl kustomize work-02/overlays/prod > work-02/overlays/prod/gen.yaml
+# Warning: 'bases' is deprecated. Please use 'resources' instead. Run 'kustomize edit fix' to update your Kustomization automatically.
+# Warning: 'commonLabels' is deprecated. Please use 'labels' instead. Run 'kustomize edit fix' to update your Kustomization automatically.
+(base) willem@mint-22:~/git/mykustomapp$ kubectl apply -k work-02/overlays/prod
+# Warning: 'bases' is deprecated. Please use 'resources' instead. Run 'kustomize edit fix' to update your Kustomization automatically.
+# Warning: 'commonLabels' is deprecated. Please use 'labels' instead. Run 'kustomize edit fix' to update your Kustomization automatically.
+configmap/mykustom-map-kcc8f98gcc created
+service/kustom-mywebapp-v1 created
+deployment.apps/kustom-mywebapp-v1 created
+(base) willem@mint-22:~/git/mykustomapp$ kubectl get all -n prod
+NAME                                      READY   STATUS    RESTARTS   AGE
+pod/kustom-mywebapp-v1-5df468f984-4cc97   1/1     Running   0          24s
+pod/kustom-mywebapp-v1-5df468f984-4tb6p   1/1     Running   0          24s
+pod/kustom-mywebapp-v1-5df468f984-mtq7q   1/1     Running   0          24s
+
+NAME                         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+service/kustom-mywebapp-v1   LoadBalancer   10.101.99.212   <pending>     80:32523/TCP   24s
+
+NAME                                 READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/kustom-mywebapp-v1   3/3     3            3           24s
+
+NAME                                            DESIRED   CURRENT   READY   AGE
+replicaset.apps/kustom-mywebapp-v1-5df468f984   3         3         3       24s
+(base) willem@mint-22:~/git/mykustomapp$ kubectl get all -l app=mywebapp --all-namespaces
+NAMESPACE   NAME                                      READY   STATUS    RESTARTS      AGE
+default     pod/kustom-mywebapp-v1-f875df8b-d8h2c     1/1     Running   1 (13h ago)   24h
+dev         pod/kustom-mywebapp-v1-67889f7d79-wrvjc   1/1     Running   1 (13h ago)   14h
+dev         pod/kustom-mywebapp-v1-67889f7d79-wsms6   1/1     Running   1 (13h ago)   14h
+prod        pod/kustom-mywebapp-v1-5df468f984-4cc97   1/1     Running   0             67s
+prod        pod/kustom-mywebapp-v1-5df468f984-4tb6p   1/1     Running   0             67s
+prod        pod/kustom-mywebapp-v1-5df468f984-mtq7q   1/1     Running   0             67s
+
+NAMESPACE   NAME                         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+default     service/kustom-mywebapp-v1   LoadBalancer   10.98.186.162   <pending>     80:31683/TCP   24h
+dev         service/kustom-mywebapp-v1   LoadBalancer   10.105.206.96   <pending>     80:31425/TCP   14h
+prod        service/kustom-mywebapp-v1   LoadBalancer   10.101.99.212   <pending>     80:32523/TCP   67s
+
+NAMESPACE   NAME                                 READY   UP-TO-DATE   AVAILABLE   AGE
+default     deployment.apps/kustom-mywebapp-v1   1/1     1            1           24h
+dev         deployment.apps/kustom-mywebapp-v1   2/2     2            2           14h
+prod        deployment.apps/kustom-mywebapp-v1   3/3     3            3           67s
+
+NAMESPACE   NAME                                            DESIRED   CURRENT   READY   AGE
+default     replicaset.apps/kustom-mywebapp-v1-59565b8f7c   0         0         0       24h
+default     replicaset.apps/kustom-mywebapp-v1-f875df8b     1         1         1       24h
+dev         replicaset.apps/kustom-mywebapp-v1-67889f7d79   2         2         2       14h
+prod        replicaset.apps/kustom-mywebapp-v1-5df468f984   3         3         3       67s
+(base) willem@mint-22:~/git/mykustomapp$ minikube service kustom-mywebapp-v1 -n prod -p kustomize
+|-----------|--------------------|-------------|---------------------------|
+| NAMESPACE |        NAME        | TARGET PORT |            URL            |
+|-----------|--------------------|-------------|---------------------------|
+| prod      | kustom-mywebapp-v1 | flask/80    | http://192.168.67.2:32523 |
+|-----------|--------------------|-------------|---------------------------|
+🎉  Opening service prod/kustom-mywebapp-v1 in default browser...
+(base) willem@mint-22:~/git/mykustomapp$ Gtk-Message: 12:18:09.058: Failed to load module "xapp-gtk3-module"
+[0606/121809.120070:WARNING:chrome/app/chrome_main_linux.cc:82] Read channel stable from /app/extra/CHROME_VERSION_EXTRA
+[0606/121809.219835:WARNING:chrome/app/chrome_main_linux.cc:82] Read channel stable from /app/extra/CHROME_VERSION_EXTRA
+Opening in existing browser session.
+^C
+(base) willem@mint-22:~/git/mykustomapp$ minikube stop -p kustomize
+✋  Stopping node "kustomize"  ...
+🛑  Powering off "kustomize" via SSH ...
+🛑  1 node stopped.
+(base) willem@mint-22:~/git/mykustomapp$ 
+```
+
+</details>
