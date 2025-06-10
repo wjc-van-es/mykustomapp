@@ -203,7 +203,7 @@ willem@mint-22:~/git/mykustomapp$ minikube service mywebapp -p kustomize
 - I deleted the service in the kubernetes-dashboard and applied the modified `service.yaml` with
   `~/git/mykustomapp$ kubectl apply -f original/service.yaml`
 - the `mywebapp` service remains pending as shown with `kubectl get services` and from the minikube dashboard
-- however `minikube -p kustomize service mywebapp` now opened a browser tab dispalying the home page
+- however `minikube -p kustomize service mywebapp` now opened a browser tab displaying the home page
 
 <details>
 

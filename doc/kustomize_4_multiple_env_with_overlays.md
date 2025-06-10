@@ -166,10 +166,6 @@ Opening in existing browser session.
 ![](images/homepage_03_dev.png)
 </details>
 
-## For now stopping minikube
-- stopping minikube dashboard with Ctrl+C
-- `minikube stop -p kustomize`
-
 ## Remainder for `prod` environment
 - [https://www.youtube.com/watch?v=spCdNeNCuFU&t=1388s](https://www.youtube.com/watch?v=spCdNeNCuFU&t=1388s)
 
@@ -309,3 +305,7 @@ Opening in existing browser session.
 ```
 
 </details>
+
+## Stopping minikube
+- stopping minikube dashboard with Ctrl+C
+- `minikube stop -p kustomize`

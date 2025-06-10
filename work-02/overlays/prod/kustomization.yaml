@@ -16,6 +16,11 @@ patches:
   - path: replicas.yaml
 
 # use the dev specific config.properties
+# name prefix and suffix are not inherited from base
 configMapGenerator:
   - name: mykustom-map
     env: config.properties
+    options:
+      # also commonLabels are not inherited from base
+      labels:
+        app: mywebapp

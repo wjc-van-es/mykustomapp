@@ -48,7 +48,7 @@ h1,h2,h3,h4,h5 {
 1. we create a [`work/`](../work) directory into which we copy the content of [`original/`](../original)
 2. we add [`work/kustomization.yaml`](../work/kustomization.yaml) and add
    1. `resources`
-   2. `commonLabels`
+   2. `commonLabels` (deprecated now use `labels` instead)
    3. `commonAnnotations`
    4. `namePrefix`
    5. `nameSuffix`
@@ -123,7 +123,8 @@ to [`work/kustomization.yaml`](../work/kustomization.yaml) leads to adding `anno
   ```
 > #### Do NOT forget 
 > - replace the value of `spec.template.spec.containers[0].envFrom[0].configMapRef.name` in 
->   [`work/deployment.yaml`](../work/deployment.yaml) from `mywebapp-configmapv1.0` to `mykustom-map`
+>   [`work/deployment.yaml`](../work/deployment.yaml) from `mywebapp-configmapv1.0` to `mykustom-map`.
+> - Here, `mykustom-map` is the name used in the `configMapGenerator` declaration
 > - Now in [work/gen.yaml](../work/gen.yaml), the `metadata.name` of the configMap manifest part matches 
 >   `spec.template.spec.containers[0].envFrom[0].configMapRef.name` of the deployment manifest part.
 >   - In our case `kustom-mykustom-map-v1-k98kg64km2`, so `mykustom-map` is prefixed and suffixed according to our specs
