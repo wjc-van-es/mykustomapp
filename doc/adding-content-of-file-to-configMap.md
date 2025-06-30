@@ -41,7 +41,8 @@ h1,h2,h3,h4,h5 {
 ## Resources
 - [https://kubernetes.io/docs/tasks/debug/debug-application/get-shell-running-container/](https://kubernetes.io/docs/tasks/debug/debug-application/get-shell-running-container/)
 - [https://www.perplexity.ai/search/in-a-kubernetes-configmap-i-ha-1PcSxBkrS0yGoHwM4xdxoQ](https://www.perplexity.ai/search/in-a-kubernetes-configmap-i-ha-1PcSxBkrS0yGoHwM4xdxoQ)
-- 
+- [perplexity/perplexity_configMap_from_file_with_kustomize.md](perplexity/perplexity_configMap_from_file_with_kustomize.md)
+- [perplexity/quarkus_config_&_k8s_secrets_&_configMaps.md](perplexity/quarkus_config_&_k8s_secrets_&_configMaps.md)
 
 ## Context
 - Starting minikube: `~/git/mykustomapp$ minikube start -p kustomize`
@@ -88,8 +89,8 @@ h1,h2,h3,h4,h5 {
   - `~/git/mykustomapp$ kubectl -n prod exec --stdin --tty kustom-mywebapp-v1-5df468f984-mtq7q -- sh` opens an 
     interactive shell
   - `printenv` reveals all available environment variables
- - Ctrl-D terminates the session
-
+- Ctrl-D terminates the session
+- end minikube session with `~/git/mykustomapp$ minikube -p kustomize stop`
 
 <details>
 
@@ -317,6 +318,10 @@ KUSTOM_MYWEBAPP_V1_PORT=tcp://10.101.99.212:80
 /code # printenv identification.json
 /code # 
 command terminated with exit code 130
+(base) willem@mint-22:~/git/mykustomapp$ minikube -p kustomize stop
+✋  Stopping node "kustomize"  ...
+🛑  Powering off "kustomize" via SSH ...
+🛑  1 node stopped.
 (base) willem@mint-22:~/git/mykustomapp$
 ```
 
