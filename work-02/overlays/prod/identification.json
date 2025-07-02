@@ -1,7 +1,7 @@
 {
-  "origin": {
-    "berichtStroom": "UWV_GLV_IN_S",
-    "berichtSoort": "GLVIV",
+  "K102_WHK": {
+    "berichtStroom": "LH",
+    "berichtSoort": "K102_WHK",
     "berichtVersie": "1"
   }
 }

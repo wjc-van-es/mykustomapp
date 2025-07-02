@@ -13,6 +13,12 @@ spec:
         image: "devopsjourney1/mywebapp:latest"
         ports:
         - containerPort: 80
+        env:
+          - name: IDENTIFICATION_JSON
+            valueFrom:
+              configMapKeyRef:
+                name: bos-herken-tbg-rfh2-xml
+                key: identification.json
         envFrom:
         - configMapRef:
             name: mykustom-map

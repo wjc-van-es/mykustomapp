@@ -47,7 +47,7 @@ This maps the ConfigMap data to Quarkus properties[^1_1][^1_2][^1_4].
 In your Quarkus application, access the JSON string directly:
 
 ```java  
-@ConfigProperty(name = "identification.json")  
+@ConfigProperty(name = "identification.json")
 String identificationJson;  
 ```
 
@@ -84,8 +84,8 @@ Quarkus automatically loads this for the `dev` profile, overriding the ConfigMap
 - **Inspect the property**:
 
 ```java  
-@GET  
-public String getConfig() {  
+@GET
+public String getConfig() {
     return identificationJson; // Returns dev or prod JSON  
 }  
 ```
@@ -154,11 +154,11 @@ Configure your Kubernetes Deployment manifest to inject the ConfigMap value dire
 
 ```yaml
 env:
-- name: IDENTIFICATION_JSON  
-  valueFrom:
-    configMapKeyRef:
-      name: bos-herken-tbg-rfh2-xml-6644946d2d
-      key: identification.json
+  - name: IDENTIFICATION_JSON
+    valueFrom:
+      configMapKeyRef:
+        name: bos-herken-tbg-rfh2-xml-6644946d2d
+        key: identification.json
 ```
 
 This maps the ConfigMap's `identification.json` content to the `IDENTIFICATION_JSON` environment variable in the pod[^2_4][^2_6][^2_7].
@@ -362,4 +362,258 @@ If your ConfigMap is mounted as a volume, you can directly access `identificatio
 [^3_17]: https://www.golinuxcloud.com/kubernetes-configmaps/
 
 [^3_18]: https://stackoverflow.com/questions/67532600/kubernetes-volume-mount-configmap-to-file-within-the-pod-without-overwriting-all
+
+
+---
+
+# I am a bit confused with the first answer: is it
+
+@ConfigProperty(name = "identification.json")
+String identificationJson;
+or
+@GET
+public String getConfig() {
+return identificationJson; // Returns dev or prod JSON
+}
+to refer to the file content as String in the code?
+
+Great question! Let me clarify the distinction:
+
+## 1. **@ConfigProperty(name = "identification.json") String identificationJson;**
+
+This is a **field injection** using MicroProfile Config (supported by Quarkus).
+It tells Quarkus:
+
+- "Inject the value of the configuration property named `identification.json` into this Java field."
+
+**Example:**
+
+```java
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
+@ApplicationScoped
+public class MyService {
+
+    @ConfigProperty(name = "identification.json")
+    String identificationJson;
+
+    // ... use identificationJson in your logic
+}
+```
+
+This makes the value (from environment variable, ConfigMap, `.env`, etc.) available as a String in your code.
+
+## 2. **@GET public String getConfig() { ... }**
+
+This is a **REST endpoint method** (using JAX-RS or RESTEasy).
+It simply returns the value of `identificationJson` (which was injected above) when someone calls this endpoint.
+
+**Example:**
+
+```java
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
+@Path("/config")
+public class ConfigResource {
+
+    @ConfigProperty(name = "identification.json")
+    String identificationJson;
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getConfig() {
+        return identificationJson;
+    }
+}
+```
+
+- When you `GET /config`, you receive the JSON content as a String.
+
+
+## **Summary**
+
+- `@ConfigProperty(name = "identification.json") String identificationJson;`
+  **Injects the config value** into your code.
+- `@GET public String getConfig() { return identificationJson; }`
+  **Exposes the injected value** via a REST endpoint.
+
+**You need both** if you want to inject the config value and then expose it via REST.
+If you just want to use the value in your business logic, you only need the first part.
+
+**Let me know if you'd like a complete code example or further details!**
+
+---
+
+# OK, thank you The first example was a bit terse. Now it makes sense.
+
+You're welcome—I'm glad the explanation clarified things for you. If you have more questions about using `@ConfigProperty`, integrating Kubernetes ConfigMaps, or any other configuration scenarios in Quarkus, feel free to ask[^5_1].
+
+<div style="text-align: center">⁂</div>
+
+[^5_1]: programming.configuration
+
+
+---
+
+# Is the quarkus-kubernetes-config extension also the best option for OpenShift or does  OpenShift has its own quarkus config variant?
+
+The **quarkus-kubernetes-config** extension is fully supported and works on both **Kubernetes** and **OpenShift** for consuming ConfigMaps and Secrets as configuration sources in Quarkus applications[^6_1]. There is **no separate OpenShift-specific variant** for configuration—OpenShift is Kubernetes-compatible, and the extension works the same way on both platforms.
+
+However, OpenShift does offer its own Quarkus extension, **quarkus-openshift**, but this is focused on generating OpenShift-specific deployment resources (like Routes, BuildConfigs, and ImageStreams), not on configuration management[^6_2][^6_3][^6_4][^6_5]. The **quarkus-openshift** extension is essentially a wrapper around the Kubernetes extension for deployment resource generation and does not replace or duplicate the functionality of `quarkus-kubernetes-config`[^6_6][^6_3][^6_4][^6_5].
+
+**Summary Table**
+
+
+| Use Case | Recommended Extension |
+| :-- | :-- |
+| ConfigMaps/Secrets as config | quarkus-kubernetes-config |
+| OpenShift deployment resources | quarkus-openshift |
+
+**Best Practice:**
+
+- Use **quarkus-kubernetes-config** for loading ConfigMaps and Secrets as configuration sources on both Kubernetes and OpenShift[^6_1].
+- Use **quarkus-openshift** if you want Quarkus to generate OpenShift-specific manifests and resources for deployment[^6_2][^6_3][^6_4][^6_5].
+
+**You do not need a separate OpenShift configuration extension for ConfigMaps/Secrets.** The existing Kubernetes config extension is the recommended and supported approach on OpenShift.
+
+<div style="text-align: center">⁂</div>
+
+[^6_1]: https://quarkus.io/guides/kubernetes-config
+
+[^6_2]: https://docs.redhat.com/en/documentation/red_hat_build_of_quarkus/2.7/html/deploying_your_quarkus_applications_to_openshift_container_platform/assembly_quarkus-openshift_quarkus-openshift
+
+[^6_3]: https://quarkus.io/extensions/io.quarkus/quarkus-openshift/
+
+[^6_4]: https://quarkus.io/guides/deploying-to-openshift
+
+[^6_5]: https://docs.redhat.com/en/documentation/red_hat_build_of_quarkus/2.2/html-single/deploying_your_quarkus_applications_to_openshift_container_platform/index
+
+[^6_6]: https://quarkus.io/guides/deploying-to-kubernetes
+
+[^6_7]: https://quarkus.io/guides/deploying-to-openshift-howto
+
+[^6_8]: https://docs.redhat.com/en/documentation/red_hat_build_of_quarkus/2.7/html-single/deploying_your_quarkus_applications_to_openshift_container_platform/index
+
+[^6_9]: https://developers.redhat.com/blog/2021/01/15/10-reasons-to-develop-quarkus-applications-on-red-hat-openshift
+
+[^6_10]: https://docs.redhat.com/de/documentation/red_hat_build_of_quarkus/2.2/html-single/deploying_your_quarkus_applications_to_openshift_container_platform/index
+
+[^6_11]: https://www.opensourcerers.org/2020/11/23/how-to-pimp-your-quarkus-application-to-benefit-from-kubernetes/
+
+[^6_12]: https://docs.redhat.com/en/documentation/red_hat_build_of_quarkus/2.13/html/deploying_your_quarkus_applications_to_openshift_container_platform/assembly_quarkus-openshift_quarkus-openshift
+
+[^6_13]: https://redhat-scholars.github.io/openshift-apps-resource-management/openshift-apps-resource-management/openshift.html
+
+[^6_14]: https://quarkus.io/extensions/io.quarkus/quarkus-container-image-openshift/
+
+[^6_15]: https://developers.redhat.com/articles/2024/06/12/4-ways-deploy-quarkus-applications-openshift-container-platform-4
+
+[^6_16]: https://quarkus.io/extensions/io.quarkus/quarkus-openshift-client/
+
+[^6_17]: https://redhat-scholars.github.io/inner-loop-guide/inner-loop/6.0/app-config.html
+
+
+---
+
+# Thank you that's a clear answer
+
+You're very welcome! 😊
+I'm glad the answer was clear and helpful. If you have any more questions about Quarkus, Kubernetes, OpenShift, or anything else, just let me know. Happy coding! 🚀
+
+---
+
+# I foresee one more difficulty:
+
+when we use a kustomize configMapGenerator with the specified name bos-herken-tbg-rfh2-xml it generates a deployment of a configMap with a name that is extended with a random string like -6644946d2d that will change with a new deployment.
+Therefore, having to map this name in application.properties as
+%prod.quarkus.kubernetes-config.config-maps=bos-herken-tbg-rfh2-xml-6644946d2d is not so future proof. Is there a way where the fixed bos-herken-tbg-rfh2-xml is sufficient?
+
+You are correct: by default, **Kustomize’s `configMapGenerator` appends a hash to the ConfigMap name** (e.g., `bos-herken-tbg-rfh2-xml-6644946d2d`). This hash changes whenever the ConfigMap content changes, ensuring rolling updates of dependent workloads[^8_5][^8_7]. This behavior is intended for immutability and automatic rollout of changes.
+
+### **Referencing the ConfigMap in Workloads**
+
+**Kustomize automatically rewrites references** to the generated ConfigMap name in your workload manifests (like Deployments or StatefulSets) if you refer to the base name (e.g., `bos-herken-tbg-rfh2-xml`).
+
+- **You should reference the base name** in your manifests, and Kustomize will update it to the full name with the hash[^8_2][^8_5].
+
+**However, Quarkus’s `quarkus-kubernetes-config.config-maps` property cannot be dynamically rewritten by Kustomize** because it is a value inside your `application.properties` file, not a Kubernetes manifest reference. This means you would have to manually update the property with each deployment if you use the full hashed name.
+
+### **How to Avoid Manual Updates**
+
+#### **Option 1: Disable Hash Suffixing for the ConfigMap**
+
+You can **disable the hash suffix** for a specific ConfigMap in Kustomize by setting the `options: { disableNameSuffixHash: true }` field:
+
+```yaml
+configMapGenerator:
+  - name: bos-herken-tbg-rfh2-xml
+    files:
+      - identification.json
+    options:
+      disableNameSuffixHash: true
+```
+
+This will generate a ConfigMap named exactly `bos-herken-tbg-rfh2-xml` **without any hash**, so you can safely reference it in your Quarkus configuration as:
+
+```properties
+%prod.quarkus.kubernetes-config.config-maps=bos-herken-tbg-rfh2-xml
+```
+
+**Drawback:**
+
+- Disabling the hash means changes to the ConfigMap will not automatically trigger rolling updates of your pods. You’ll need to handle rollout manually if the config changes.
+
+
+#### **Option 2: Use Environment Variable or Volume Mount Instead**
+
+Instead of relying on the Quarkus extension for reading ConfigMaps by name, you can:
+
+- Mount the ConfigMap as a file or inject it as an environment variable in your Deployment manifest (which Kustomize will rewrite for you).
+- Reference the mounted file or environment variable in your Quarkus application.
+
+This avoids the need to specify the ConfigMap name in `application.properties` at all.
+
+### **Summary Table**
+
+| Approach | ConfigMap Name Stable? | Auto Rollout on Change? | Quarkus Config Needed? |
+| :-- | :-- | :-- | :-- |
+| Default `configMapGenerator` (with hash) | ❌ No | ✅ Yes | Manual update or automation of property needed |
+| `disableNameSuffixHash: true` | ✅ Yes | ❌ No | Reference base name in Quarkus property |
+| Use env var or file mount (recommended) | ✅ Yes | ✅/❌ (depends on rollout strategy) | No need to specify ConfigMap name in Quarkus config |
+
+**In summary:**
+
+- **If you want to use a fixed name in Quarkus, set `disableNameSuffixHash: true` for your ConfigMapGenerator.**
+- **If you want automatic rollouts, use the default hash behavior and automate updating the property, or use environment variables/file mounts instead of the Quarkus Kubernetes Config extension.**
+
+[^8_5][^8_7][^8_2]
+
+<div style="text-align: center">⁂</div>
+
+[^8_1]: https://stackoverflow.com/questions/77606656/generate-configmap-using-kustomization-but-the-name-in-configmapref-doesnt-i
+
+[^8_2]: https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/
+
+[^8_3]: https://github.com/kubernetes-sigs/kustomize/issues/1301
+
+[^8_4]: https://github.com/kubernetes-sigs/kustomize/issues/4674
+
+[^8_5]: https://kubectl-book-ja.netlify.app/pages/reference/kustomize.html
+
+[^8_6]: https://kubectl.docs.kubernetes.io/references/kustomize/builtins/
+
+[^8_7]: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/configmapgenerator/
+
+[^8_8]: https://glasskube.dev/blog/patching-with-kustomize/
+
+
+---
+
+# OK Thank you, that is a clear summary of options and their consequences
+
+You're very welcome! I'm glad the summary helped clarify your options and the trade-offs involved. If you have any more questions about Kustomize, Quarkus, Kubernetes, or deployment strategies, feel free to ask. Good luck with your project and happy deploying! 🚀
 

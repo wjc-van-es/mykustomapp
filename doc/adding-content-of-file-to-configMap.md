@@ -44,7 +44,7 @@ h1,h2,h3,h4,h5 {
 - [perplexity/perplexity_configMap_from_file_with_kustomize.md](perplexity/perplexity_configMap_from_file_with_kustomize.md)
 - [perplexity/quarkus_config_&_k8s_secrets_&_configMaps.md](perplexity/quarkus_config_&_k8s_secrets_&_configMaps.md)
 
-## Context
+## First attempt
 - Starting minikube: `~/git/mykustomapp$ minikube start -p kustomize`
 - We added the content of [`work-02/overlays/prod/identification.json`](../work-02/overlays/prod/identification.json)
 - and added this entry under the `configMapGenerator` of 
@@ -64,9 +64,9 @@ h1,h2,h3,h4,h5 {
   data:
     identification.json: |-
       {
-        "origin": {
-          "berichtStroom": "UWV_GLV_IN_S",
-          "berichtSoort": "GLVIV",
+        "K102_WHK": {
+          "berichtStroom": "LH",
+          "berichtSoort": "K102_WHK",
           "berichtVersie": "1"
         }
       }
@@ -326,3 +326,58 @@ command terminated with exit code 130
 ```
 
 </details>
+
+## Continued to get the content of `identification.json` available as environment variable
+
+### Steps
+- start minikube again with: `~/git/mykustomapp$ minikube start -p kustomize`
+- start the webconsole dashboard with: `~/git/mykustomapp$ minikube dashboard -p kustomize`
+- In [`../work-02/base/deployment.yaml`](../work-02/base/deployment.yaml) add:
+  under `spec.template.spec.containers`
+  ```yaml
+          env:
+          - name: IDENTIFICATION_JSON
+            valueFrom:
+              configMapKeyRef:
+                name: bos-herken-tbg-rfh2-xml
+                key: identification.json
+  ```
+  - this links the content of the `identification.json` file, declared in ConfigMap `bos-herken-tbg-rfh2-xml` as defined
+    in the `configMapGenerator` of 
+    [../work-02/overlays/prod/kustomization.yaml](../work-02/overlays/prod/kustomization.yaml)
+    as the string value of the environment variable `IDENTIFICATION_JSON`
+- Now we can check the deployment manifest generated as 
+  [../`work-02/overlays/prod/gen.yaml`](../work-02/overlays/prod/gen.yaml) after running:
+  `~/git/mykustomapp$ kubectl kustomize work-02/overlays/prod > work-02/overlays/prod/gen.yaml`
+  - we see in the `kind: Deployment` section under `spec.template.spec.containers` the addition of
+  ```yaml
+       env:
+       - name: IDENTIFICATION_JSON
+         valueFrom:
+           configMapKeyRef:
+             key: identification.json
+             name: bos-herken-tbg-rfh2-xml-7dtk9cbh84
+  ```
+  and the hash`-7dtk9cbh84` appended by the `ConfigMapGenerator` matches that of the `metadata.name` value of the
+  corresponding `kind: ConfigMap` section (with the `identification.json` data) `bos-herken-tbg-rfh2-xml-7dtk9cbh84`
+- We can effectuate the addition with `~/git/mykustomapp$ kubectl apply -k work-02/overlays/prod`
+- Look up a pod in the prod namespace with
+  - `~/git/mykustomapp$ kubectl get all -l app=mywebapp --all-namespaces`
+  - or more specific: `~/git/mykustomapp$ kubectl get po -l app=mywebapp --all-namespaces`
+  - or even `~/git/mykustomapp$ kubectl get po -l app=mywebapp -n prod`
+- Now open an interactive shell into one of them listed and `printenv IDENTIFICATION_JSON` should return the file 
+  content:
+  ```bash
+  ~/git/mykustomapp$ kubectl exec --stdin --tty -n prod kustom-mywebapp-v1-7d89bf9bf9-9flvb -- sh
+  /code # printenv IDENTIFICATION_JSON
+  {
+    "K102_WHK": {
+      "berichtStroom": "LH",
+      "berichtSoort": "K102_WHK",
+      "berichtVersie": "1"
+    }
+  }
+  /code # 
+  ```
+- _Ctrl-D_ to close the interactive shell session
+- `~/git/mykustomapp$ minikube -p kustomize stop` to stop this minikube session
