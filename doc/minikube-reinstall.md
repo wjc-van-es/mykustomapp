@@ -41,6 +41,8 @@ h1,h2,h3,h4,h5 {
 ## Context
 For `@mint-22` we postponed a complete re-install, but `@willem-Latitude-5590` is one more behind, so here we are
 going to test it again for this project.
+Also, we have to check the version and update kubectl. I think this is done automatically with updates on `@mint-22`,
+but we will check that.
 
 ## Resources
 - [https://stackoverflow.com/questions/57821066/how-to-update-minikube-latest-version](https://stackoverflow.com/questions/57821066/how-to-update-minikube-latest-version)
