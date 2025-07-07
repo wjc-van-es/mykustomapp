@@ -24,3 +24,9 @@ configMapGenerator:
       # also commonLabels are not inherited from base
       labels:
         app: mywebapp
+  - name: bos-herken-tbg-rfh2-xml
+    files:
+      - identification.json
+    options:
+      labels:
+        app: mywebapp
