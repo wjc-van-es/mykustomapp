@@ -13,3 +13,11 @@ namePrefix:
 
 nameSuffix:
   -v1
+
+configMapGenerator:
+  - name: bos-herken-tbg-rfh2-xml
+    files:
+      - identification.json
+    options:
+      labels:
+        app: mywebapp

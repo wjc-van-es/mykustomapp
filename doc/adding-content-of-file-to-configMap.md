@@ -46,7 +46,7 @@ h1,h2,h3,h4,h5 {
 
 ## First attempt
 - Starting minikube: `~/git/mykustomapp$ minikube start -p kustomize`
-- We added the content of [`work-02/overlays/prod/identification.json`](../work-02/overlays/prod/identification.json)
+- We added the content of [`work-02/overlays/prod/identification.json`](../work-02/base/identification.json)
 - and added this entry under the `configMapGenerator` of 
   [`work-02/overlays/prod/kustomization.yaml`](../work-02/overlays/prod/kustomization.yaml)
   ```yaml
@@ -381,3 +381,61 @@ command terminated with exit code 130
   ```
 - _Ctrl-D_ to close the interactive shell session
 - `~/git/mykustomapp$ minikube -p kustomize stop` to stop this minikube session
+
+## Moving the `configMapGenerator` of `bos-herken-tbg-rfh2-xml` from overlays to base
+
+### Context
+- We had the `configMapGenerator` of `bos-herken-tbg-rfh2-xml` with the `identification.json` as source file in the
+  `overlays/prod` and we had an env var `IDENTIFICATION_JSON` in the `base/deployment.yml` manifest refer to it
+  by means of a `valueFrom.configMapKeyRef` construction.
+- This, however, impaired the `IDENTIFICATION_JSON` for the pods of the `dev` namespace, because there the configMap
+  was not present yet.
+- We fixed this quickly by repeating the construction of `configMapGenerator` of `bos-herken-tbg-rfh2-xml` in the
+  `dev` namespace as well, but then we had a duplication in both the `overlays/dev/` and the `overlays/prod/`.
+- We decided to keep the `IDENTIFICATION_JSON` env var for both namespaces, but move the `configMapGenerator` of `bos-herken-tbg-rfh2-xml` with the `identification.json` to the `base/` to remove the duplication
+- This consists of 
+  - moving both `work-02/overlays/dev/identification.json` & `work-02/overlays/prod/identification.json`
+    to [`work-02/base/identification.json`](../work-02/base/identification.json)
+  - moving
+    ```yaml
+    configMapGenerator:
+    - name: bos-herken-tbg-rfh2-xml
+      files:
+       - identification.json
+      options:
+        labels:
+          app: mywebapp
+    ```
+    from `work-02/overlays/dev/kustomization.yaml` & `work-02/overlays/prod/kustomization.yaml` to
+    [work-02/base/kustomization.yaml](../work-02/base/kustomization.yaml)
+
+### Testing
+- We run both
+  - `~/git/mykustomapp$ kubectl kustomize work-02/overlays/dev > work-02/overlays/dev/gen.yaml`
+  - `~/git/mykustomapp$ kubectl kustomize work-02/overlays/prod > work-02/overlays/prod/gen.yaml`
+- The resulting `gen.yaml` manifests both 
+  - contain a `ConfigMap` with the content of the `identification.json` only 
+    their name also have the `kustom-` prefix and the `-v1` suffix as is defined in 
+    [../work-02/base/kustomization.yaml](../work-02/base/kustomization.yaml)
+  - but this prefix and suffix are also present in the `valueFrom.configMapKeyRef` construction just like the hash 
+    suffix, so this should work as we continue.
+- Now we start minikube: `~/git/mykustomapp$ minikube start -p kustomize`
+- We apply the changes for both the `dev` and the `prod` namespace:
+  - `~/git/mykustomapp$ kubectl apply -k work-02/overlays/dev`
+  - `~/git/mykustomapp$ kubectl apply -k work-02/overlays/prod`
+- see that pods have started without problems for both namespaces
+  `~/git/mykustomapp$ kubectl get all -l app=mywebapp --all-namespaces`
+- check the configmaps for both namespaces
+  - `kubectl get configmaps -n dev`
+  - `kubectl get configmaps -n prod`
+- delete the old ones without the name prefix and suffix as they are no longer referenced by the env var in the 
+  generated deployment manifest
+  - `kubectl delete configmap bos-herken-tbg-rfh2-xml-7dtk9cbh84 -n dev`
+  - `kubectl delete configmap bos-herken-tbg-rfh2-xml-7dtk9cbh84 -n prod`
+- check whether the homepages can be displayed
+  - `minikube service kustom-mywebapp-v1 -n dev -p kustomize`
+  - `minikube service kustom-mywebapp-v1 -n prod -p kustomize`
+- check the interactive sessions for a pod in the `dev` and one in the `prod` namespace
+  - `~/git/mykustomapp$ kubectl exec --stdin --tty -n dev kustom-mywebapp-v1-fb95889b7-8zzsq -- sh`
+  - `~/git/mykustomapp$ kubectl exec --stdin --tty -n prod kustom-mywebapp-v1-6d4597866f-8cghd -- sh`
+- Stop the minikube cluster: `minikube -p kustomize stop`
